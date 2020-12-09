@@ -6,11 +6,17 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 17:23:33 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 13:08:40 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/09 15:07:49 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+/*
+** Monitoring function for each philosopher thread.
+** Checks if the time passed since last eat exceeds the limit. If yes,
+** returns and sets the philosopher's state to DIED.
+*/
 
 void		*philo_monitor(void *ptr)
 {
@@ -34,6 +40,12 @@ void		*philo_monitor(void *ptr)
 	}
 	return (NULL);
 }
+
+/*
+** Helper function for "monitor_threads" function.
+** Checks the status of a philosopher and returns 1 if it is in the final
+** state, otherwise 0.
+*/
 
 static int	check_status(t_philos *philos, t_params *params, int *max)
 {
@@ -59,6 +71,12 @@ static int	check_status(t_philos *philos, t_params *params, int *max)
 	*max = max_eat;
 	return (0);
 }
+
+/*
+** Monitoring function to check the philosophers' status for death
+** and maximum eats approach.
+** If the final state is reached, the function returns and the program exits.
+*/
 
 void		monitor_threads(t_philos *philos, t_params *params)
 {

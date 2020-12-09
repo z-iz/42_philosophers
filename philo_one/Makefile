@@ -6,12 +6,12 @@
 #    By: larosale <larosale@42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/22 04:34:46 by larosale          #+#    #+#              #
-#    Updated: 2020/12/09 03:17:29 by larosale         ###   ########.fr        #
+#    Updated: 2020/12/09 14:33:52 by larosale         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			= philo_one
-CFLAGS			= -Wall -Werror -Wextra #-g -fsanitize=thread
+CFLAGS			= -Wall -Werror -Wextra
 NODEPS			= clean fclean re
 SRCS			= philo_one.c philo_actions.c philo_init.c philo_utils.c \
 				philo_monitor.c philo_destroy.c \

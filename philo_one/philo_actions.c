@@ -6,11 +6,17 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/06 16:46:24 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 13:09:25 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/09 15:20:50 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+/*
+** Helper function for the "philo_take_forks" function.
+** Depending on the "flag" value (LOCK or UNLOCK) and the philosopher's
+** current state, locks or unlocks the respective forks.
+*/
 
 static void	fork_locker(t_philos *phil, int flag)
 {
@@ -41,6 +47,10 @@ static void	fork_locker(t_philos *phil, int flag)
 	}
 }
 
+/*
+** Function to model the philosopher thinking.
+*/
+
 void		philo_think(t_philos *phil)
 {
 	pthread_mutex_lock(&(phil->state_lock));
@@ -48,6 +58,10 @@ void		philo_think(t_philos *phil)
 	print_status(phil->num, phil->state, get_time(phil->params));
 	pthread_mutex_unlock(&(phil->state_lock));
 }
+
+/*
+** Function to model the philosopher taking forks.
+*/
 
 void		philo_take_forks(t_philos *phil)
 {
@@ -62,6 +76,11 @@ void		philo_take_forks(t_philos *phil)
 	print_status(phil->num, phil->state, get_time(phil->params));
 	pthread_mutex_unlock(&(phil->state_lock));
 }
+
+/*
+** Function to model the philosopher eating.
+** Sleeping is done in small fractions to reduce error in timing.
+*/
 
 void		philo_eat(t_philos *phil)
 {
@@ -78,6 +97,11 @@ void		philo_eat(t_philos *phil)
 		usleep(100);
 	fork_locker(phil, UNLOCK);
 }
+
+/*
+** Function to model the philosopher sleeping.
+** Sleeping is done in small fractions to reduce error in timing.
+*/
 
 void		philo_sleep(t_philos *phil)
 {

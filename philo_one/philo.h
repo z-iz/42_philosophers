@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 23:38:20 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 13:16:00 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/09 14:44:31 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,15 @@
 # include <pthread.h>
 # include <sys/time.h>
 
+/*
+** MAX_THREADS defines maxumum number of threads allowed in the program
+** arguments.
+** MIN_TIME defines minimum time values allowed in the program arguments.
+** CHECK_PERIOD defines interval for the philosopher death monitor.
+** LEFTY and RIGHTY define philosopher types.
+** LOCK and UNLOCK define flags used by fork_locker function.
+*/
+
 # define MAX_THREADS	(200)
 # define MIN_TIME		(60)
 # define CHECK_PERIOD	(1000)
@@ -30,8 +39,16 @@
 # define LOCK			(0)
 # define UNLOCK			(1)
 
+/*
+** Global variables used to keep locks for forks and writing output.
+*/
+
 extern				pthread_mutex_t *g_forks;
 extern				pthread_mutex_t g_write_lock;
+
+/*
+** Enumeration of philosopher's states.
+*/
 
 typedef enum		e_states
 {
@@ -45,6 +62,15 @@ typedef enum		e_states
 	DIED
 }					t_states;
 
+/*
+** The structure of type "t_params" defines parameters, obtained through the
+** program arguments:
+** - number of threads (philosophers, forks);
+** - times to die, eat, sleep;
+** - number of maximum eats;
+** Also, it contains the program starting time.
+*/
+
 typedef struct		s_params
 {
 	int				thr_num;
@@ -54,6 +80,18 @@ typedef struct		s_params
 	int				num_eats;
 	long			start_time;
 }					t_params;
+
+/*
+** The structure of type "t_philos" defines philosopher's parameters:
+** - number, starting from 1;
+** - type (LEFTY or RIGHTY);
+** - associated thread variable;
+** - state (starts with THINKING);
+** - number of times the philosopher ate;
+** - time of last eat (from its start);
+** - mutex for locking the state;
+** - pointer to params structure.
+*/
 
 typedef struct		s_philos
 {

@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 23:32:34 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 03:28:28 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/09 15:12:22 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,13 @@
 
 pthread_mutex_t	*g_forks;
 pthread_mutex_t g_write_lock;
+
+/*
+** Worker function for the philosopher thread.
+** First, it creates a monitoring thread to check for starvation and report
+** death.
+** Then it starts the working loop of changing the philosopher's states.
+*/
 
 static void	*philo_worker(void *ptr)
 {
@@ -35,6 +42,10 @@ static void	*philo_worker(void *ptr)
 	return (NULL);
 }
 
+/*
+** Runs all philosophers' threads (as detached).
+*/
+
 static int	run_threads(t_philos *philos, t_params *params)
 {
 	t_philos	*temp;
@@ -52,6 +63,11 @@ static int	run_threads(t_philos *philos, t_params *params)
 	}
 	return (0);
 }
+
+/*
+** Validates the command-line arguments and fills the "par"
+** structure with values.
+*/
 
 static int	check_args(int argc, char **argv, t_params **par)
 {
@@ -74,6 +90,15 @@ static int	check_args(int argc, char **argv, t_params **par)
 	*par = params;
 	return (0);
 }
+
+/*
+** Main function of philo_one.
+** Checks command-line arguments, then creates data structures for
+** threads (philosophers) and resource mutexes (forks).
+** Runs philosophers' threads and starts monitor to detect
+** deaths from starvation and reaching maximum eats limit.
+** Finally, it cleans up the state (frees memory, destoys mutexes).
+*/
 
 int			main(int argc, char **argv)
 {

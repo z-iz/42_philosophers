@@ -6,16 +6,16 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/07 17:09:27 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 03:04:53 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/09 14:46:36 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /*
-** Gets the current system time since epoch, converts it to milliseconds,
-** and if no starting time is specified - fills to params->start_time.
-** Else, returns the diff between current time and starting time.
+** Prints the current status with philosopher's number and timestamp.
+** Static variable "finish" is used for determining an ending state
+** (death or max_eats approach) and stopping output.
 */
 
 void	print_status(int num, t_states state, int time)
@@ -45,6 +45,12 @@ void	print_status(int num, t_states state, int time)
 	}
 	pthread_mutex_unlock(&g_write_lock);
 }
+
+/*
+** Gets the current system time since epoch, converts it to milliseconds,
+** and if no starting time is specified - fills to params->start_time.
+** Else, returns the diff between current time and starting time.
+*/
 
 int		get_time(t_params *params)
 {

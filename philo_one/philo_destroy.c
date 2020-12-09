@@ -6,11 +6,16 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 02:19:10 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 03:19:00 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/09 15:17:01 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+/*
+** Helper function for the "cleanup" function.
+** Clears the "g_forks" mutexes array.
+*/
 
 static void	clear_forks(t_params *params)
 {
@@ -26,6 +31,11 @@ static void	clear_forks(t_params *params)
 	return ;
 }
 
+/*
+** Helper function for the "cleanup" function.
+** Clears the philosophers array of structures.
+*/
+
 static void	clear_philos(t_philos *phil)
 {
 	int	num;
@@ -40,6 +50,14 @@ static void	clear_philos(t_philos *phil)
 	free(phil);
 	return ;
 }
+
+
+/*
+** Cleans up the program state:
+** - frees the "t_philos" array;
+** - frees the "params" structure;
+** - destroys "g_forks" and "g_write_lock" mutexes.
+*/
 
 int			cleanup(t_philos *phil, t_params *params, int errnum)
 {

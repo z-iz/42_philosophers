@@ -6,11 +6,16 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/07 17:10:39 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 02:57:01 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/09 15:14:01 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+/*
+** Creates an array of data structures for philosopher's threads and returns
+** the pointer to its first element.
+*/
 
 t_philos	*create_philos(t_params *params)
 {
@@ -36,6 +41,11 @@ t_philos	*create_philos(t_params *params)
 	}
 	return (philos);
 }
+
+/*
+** Creates an array of mutexes used to lock resources (forks).
+** Pointer to the created array is saved in the global variable "g_forks".
+*/
 
 int			create_forks(t_params *params)
 {

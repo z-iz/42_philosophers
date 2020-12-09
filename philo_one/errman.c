@@ -6,11 +6,16 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 00:04:14 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 03:14:21 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/09 15:21:43 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+/*
+** Prints error message depending on the error number "errnum".
+** Error codes are defined in enum in "philo.h" header.
+*/
 
 int		errman(int errnum)
 {
