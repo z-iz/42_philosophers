@@ -6,11 +6,11 @@
 #    By: larosale <larosale@42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/22 04:34:46 by larosale          #+#    #+#              #
-#    Updated: 2020/12/09 21:41:20 by larosale         ###   ########.fr        #
+#    Updated: 2020/12/10 12:14:23 by larosale         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME			= philo_one
+NAME			= philo_two
 CFLAGS			= -Wall -Werror -Wextra
 NODEPS			= clean fclean re
 SRCS			= philo_two.c philo_actions.c philo_init.c philo_utils.c \

@@ -6,14 +6,15 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 23:32:34 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 21:39:55 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/10 12:33:10 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-sem_t *g_forks;
-sem_t *g_write_lock;
+sem_t		*g_forks;
+sem_t		*g_write_lock;
+int			g_forks_left;
 
 static void	*philo_worker(void *ptr)
 {
@@ -84,11 +85,10 @@ int			main(int argc, char **argv)
 	philos = NULL;
 	if (check_args(argc, argv, &params)
 		|| !(philos = create_philos(params))
-		|| create_forks(params))
+		|| create_sems(params))
 		return (1);
-	if (pthread_mutex_init(&g_write_lock, NULL)
-		|| get_time(params) < 0)
-		return (cleanup(philos, params, ERR_SYS));
+	get_time(params);
+	g_forks_left = params->thr_num;
 	if (run_threads(philos, params))
 		return (1);
 	monitor_threads(philos, params);

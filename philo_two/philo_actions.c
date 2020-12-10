@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/06 16:46:24 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 21:39:20 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/10 12:22:26 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ void		philo_take_forks(t_philos *phil)
 {
 	sem_wait(g_forks);
 	sem_wait(phil->state_lock);
-	phil->state = (phil->type == RIGHTY ? TAKEN_RFORK : TAKEN_LFORK);
+	phil->state = TAKEN_LFORK;
 	print_status(phil->num, phil->state, get_time(phil->params));
 	sem_post(phil->state_lock);
 	sem_wait(g_forks);

@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 23:38:20 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 21:25:24 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/10 12:32:01 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,9 @@
 # define MIN_TIME		(60)
 # define CHECK_PERIOD	(1000)
 
+# define LOCK			(1)
+# define UNLOCK			(2)
+
 /*
 ** Global variables used to keep semaphores for forks and writing output.
 */
@@ -46,8 +49,7 @@ extern				sem_t *g_write_lock;
 typedef enum		e_states
 {
 	THINKING = 1,
-	TAKEN_LFORK,
-	TAKEN_RFORK,
+	TAKEN_FORK,
 	TAKEN_FORKS,
 	EATING,
 	SLEEPING,

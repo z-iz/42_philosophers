@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 02:19:10 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 21:32:24 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/10 12:13:50 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static void	clear_philos(t_philos *phil)
 	num = 0;
 	while (num < phil->params->thr_num)
 	{
-		sem_unlink((phil + num)->state_lock);
+		sem_close((phil + num)->state_lock);
 		num++;
 	}
 	free(phil->params);
@@ -37,15 +37,15 @@ static void	clear_philos(t_philos *phil)
 ** Cleans up the program state:
 ** - frees the "t_philos" array;
 ** - frees the "params" structure;
-** - destroys "g_forks" and "g_write_lock" mutexes.
+** - destroys "g_forks" and "g_write_lock" semaphores.
 */
 
 int			cleanup(t_philos *phil, t_params *params, int errnum)
 {
 	if (g_forks)
-		sem_unlink(g_forks);
+		sem_close(g_forks);
 	if (g_write_lock)
-		sem_unlink(g_write_lock);
+		sem_close(g_write_lock);
 	if (params && !phil)
 		free(params);
 	if (phil)
