@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/07 17:09:27 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 19:31:29 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/10 15:27:16 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	print_status(int num, t_states state, int time)
 			ft_putstr_fd(" ", 1);
 			ft_putnbr_fd(num, 1);
 		}
-		state == TAKEN_LFORK || state == TAKEN_RFORK || state == TAKEN_FORKS
+		state == TAKEN_FORK || state == TAKEN_FORKS
 			? ft_putstr_fd(" has taken a fork\n", 1) : 0;
 		state == EATING ? ft_putstr_fd(" is eating\n", 1) : 0;
 		state == SLEEPING ? ft_putstr_fd(" is sleeping\n", 1) : 0;

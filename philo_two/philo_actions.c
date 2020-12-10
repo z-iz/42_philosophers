@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/06 16:46:24 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/10 12:22:26 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/10 18:06:49 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,40 @@
 ** Depending on the "flag" value (LOCK or UNLOCK) and the philosopher's
 ** current state, locks or unlocks the respective forks.
 */
-/*
+
 static void	fork_locker(t_philos *phil, int flag)
 {
+	if (!sem_wait(phil->state_lock))
+		printf("Test\n");
+	printf("G_forks is: %d\n", g_forks_left);
+	sem_wait(g_forks_count);
+	if (flag == LOCK && phil->state == THINKING && g_forks_left > 1)
+	{
+		sem_post(phil->state_lock);
+		g_forks_left--;
+		sem_post(g_forks_count);
+		sem_wait(g_forks);
+		return ;
+	}
+	else if (flag == LOCK && phil->state == TAKEN_FORK)
+	{
+		sem_post(phil->state_lock);
+		g_forks_left--;
+		sem_post(g_forks_count);
+		sem_wait(g_forks);
+		return ;
+	}
+	if (flag == UNLOCK)
+	{
+		sem_post(phil->state_lock);
+		g_forks_left += 2;
+		sem_post(g_forks_count);
+		sem_post(g_forks);
+		sem_post(g_forks);
+		return ;
+	}
+}
+/*
 	int	left_fork;
 	int	right_fork;
 
@@ -65,12 +96,13 @@ void		philo_think(t_philos *phil)
 
 void		philo_take_forks(t_philos *phil)
 {
-	sem_wait(g_forks);
+	printf("TEST PROCESS'\n");
+	fork_locker(phil, LOCK);
 	sem_wait(phil->state_lock);
-	phil->state = TAKEN_LFORK;
+	phil->state = TAKEN_FORK;
 	print_status(phil->num, phil->state, get_time(phil->params));
 	sem_post(phil->state_lock);
-	sem_wait(g_forks);
+	fork_locker(phil, LOCK);
 	sem_wait(phil->state_lock);
 	phil->state = TAKEN_FORKS;
 	print_status(phil->num, phil->state, get_time(phil->params));
@@ -95,8 +127,7 @@ void		philo_eat(t_philos *phil)
 	sem_post(phil->state_lock);
 	while (get_time(phil->params) - time < phil->params->t_eat)
 		usleep(100);
-	sem_post(g_forks);
-	sem_post(g_forks);
+	fork_locker(phil, UNLOCK);
 }
 
 /*

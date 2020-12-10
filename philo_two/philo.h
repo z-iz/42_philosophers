@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 23:38:20 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/10 12:32:01 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/10 17:51:10 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <semaphore.h>
+# include <stdio.h>
 
 /*
 ** MAX_THREADS defines maxumum number of threads allowed in the program
@@ -39,8 +40,10 @@
 ** Global variables used to keep semaphores for forks and writing output.
 */
 
-extern				sem_t *g_forks;
-extern				sem_t *g_write_lock;
+extern sem_t 		*g_forks;
+extern sem_t 		*g_write_lock;
+extern sem_t		*g_forks_count;
+extern int			g_forks_left;
 
 /*
 ** Enumeration of philosopher's states.
@@ -95,6 +98,7 @@ typedef struct		s_philos
 	int				num_ate;
 	int				last_eat;
 	sem_t*			state_lock;
+	char			*sem_name;
 	t_params		*params;
 }					t_philos;
 

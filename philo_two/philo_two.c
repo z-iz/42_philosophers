@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 23:32:34 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/10 12:33:10 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/10 17:56:35 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 sem_t		*g_forks;
 sem_t		*g_write_lock;
+sem_t		*g_forks_count;
 int			g_forks_left;
 
 static void	*philo_worker(void *ptr)
@@ -92,6 +93,7 @@ int			main(int argc, char **argv)
 	if (run_threads(philos, params))
 		return (1);
 	monitor_threads(philos, params);
+	printf("TEST\n");
 	cleanup(philos, params, OK);
 	return (0);
 }
