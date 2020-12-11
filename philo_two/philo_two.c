@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 23:32:34 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/10 17:56:35 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/11 21:06:21 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,14 @@
 
 sem_t		*g_forks;
 sem_t		*g_write_lock;
-sem_t		*g_forks_count;
-int			g_forks_left;
+sem_t		*g_ok_to_take;
+
+/*
+** Worker function for the philosopher thread.
+** First, it creates a monitoring thread to check for starvation and report
+** death.
+** Then it starts the working loop of changing the philosopher's states.
+*/
 
 static void	*philo_worker(void *ptr)
 {
@@ -24,9 +30,9 @@ static void	*philo_worker(void *ptr)
 
 	phil = (t_philos *)ptr;
 	if (pthread_create(&monitor, NULL, philo_monitor, phil))
-		return (cleanup(phil, phil->params, ERR_SYS) ? NULL : NULL);
+		return (NULL);
 	if (pthread_detach(monitor))
-		return (cleanup(phil, phil->params, ERR_SYS) ? NULL : NULL);
+		return (NULL);
 	while (1)
 	{
 		philo_take_forks(phil);
@@ -36,6 +42,10 @@ static void	*philo_worker(void *ptr)
 	}
 	return (NULL);
 }
+
+/*
+** Runs all philosophers' threads (as detached).
+*/
 
 static int	run_threads(t_philos *philos, t_params *params)
 {
@@ -54,6 +64,11 @@ static int	run_threads(t_philos *philos, t_params *params)
 	}
 	return (0);
 }
+
+/*
+** Validates the command-line arguments and fills the "par"
+** structure with values.
+*/
 
 static int	check_args(int argc, char **argv, t_params **par)
 {
@@ -77,6 +92,15 @@ static int	check_args(int argc, char **argv, t_params **par)
 	return (0);
 }
 
+/*
+** Main function of philo_two.
+** Checks command-line arguments, then creates data structures for
+** threads (philosophers) and resource semaphors.
+** Runs philosophers' threads and starts monitor to detect
+** deaths from starvation and reaching maximum eats limit.
+** Finally, it cleans up the state (frees memory, closes semaphors).
+*/
+
 int			main(int argc, char **argv)
 {
 	t_params	*params;
@@ -89,11 +113,10 @@ int			main(int argc, char **argv)
 		|| create_sems(params))
 		return (1);
 	get_time(params);
-	g_forks_left = params->thr_num;
 	if (run_threads(philos, params))
 		return (1);
 	monitor_threads(philos, params);
-	printf("TEST\n");
+	sleep(1);
 	cleanup(philos, params, OK);
 	return (0);
 }

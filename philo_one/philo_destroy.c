@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 02:19:10 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 15:17:01 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/11 20:32:02 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ static void	clear_philos(t_philos *phil)
 	free(phil);
 	return ;
 }
-
 
 /*
 ** Cleans up the program state:

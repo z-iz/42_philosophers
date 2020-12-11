@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 02:19:10 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/10 17:53:31 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/11 19:31:35 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,40 +24,30 @@ static void	clear_philos(t_philos *phil)
 	num = 0;
 	while (num < phil->params->thr_num)
 	{
-		sem_unlink(phil->sem_name);
-		//sem_close((phil + num)->state_lock);
+		sem_unlink((phil + num)->sem_name);
+		free((phil + num)->sem_name);
+		(phil + num)->sem_name = NULL;
 		num++;
 	}
 	free(phil->params);
-	free(phil->sem_name);
+	phil->params = NULL;
 	free(phil);
+	phil = NULL;
 	return ;
 }
-
 
 /*
 ** Cleans up the program state:
 ** - frees the "t_philos" array;
 ** - frees the "params" structure;
-** - destroys "g_forks" and "g_write_lock" semaphores.
+** - destroys "g_forks", "g_ok_to_take" and "g_write_lock" semaphores.
 */
 
 int			cleanup(t_philos *phil, t_params *params, int errnum)
 {
-	if (g_forks)
-	{
-		sem_unlink("forks");
-	//	sem_close(g_forks);
-	}
-	if (g_write_lock)
-	{
-		sem_unlink("write_lock");
-	//	sem_close(g_write_lock);
-	}
-	if (g_forks_count)
-	{
-		sem_unlink("forks_count");
-	}
+	sem_unlink("forks");
+	sem_unlink("write_lock");
+	sem_unlink("ok_to_take");
 	if (params && !phil)
 		free(params);
 	if (phil)

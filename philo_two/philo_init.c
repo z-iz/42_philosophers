@@ -6,13 +6,18 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/07 17:10:39 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/10 18:08:52 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/11 20:35:06 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static int		num_size(int num)
+/*
+** Helper function for the "make_sem_name" function.
+** Calculates the number "num" length in digits.
+*/
+
+static int	num_size(int num)
 {
 	int i;
 
@@ -24,6 +29,12 @@ static int		num_size(int num)
 	}
 	return (i);
 }
+
+/*
+** Helper function for "create_philos" function.
+** Makes semaphore name from "str", with number "num" appended to it and
+** saves it to the buffer.
+*/
 
 static void	make_sem_name(char *buffer, char *str, int num)
 {
@@ -51,22 +62,22 @@ t_philos	*create_philos(t_params *params)
 	t_philos	*philos;
 	t_philos	*temp;
 	int			num;
-	char		*sem_name;
 
 	num = 0;
-	if (!(philos = ft_calloc(params->thr_num, sizeof(t_philos))) ||
-		!(sem_name = ft_calloc(100, 1)))
+	if (!(philos = ft_calloc(params->thr_num, sizeof(t_philos))))
 		return (cleanup(NULL, params, ERR_SYS) ? NULL : NULL);
 	temp = philos;
 	while (num < params->thr_num)
 	{
-		memset(sem_name, 0, 100);
+		if (!(temp->sem_name = ft_calloc(100, 1)))
+			return (cleanup(NULL, params, ERR_SYS) ? NULL : NULL);
 		temp->num = num + 1;
-		make_sem_name(sem_name, "state_lock", temp->num);
+		make_sem_name(temp->sem_name, "state_lock", temp->num);
 		temp->state = THINKING;
 		temp->params = params;
-		temp->sem_name = sem_name;
-		if ((temp->state_lock = sem_open(sem_name, O_CREAT, 0666, 1)) == SEM_FAILED)
+		sem_unlink(temp->sem_name);
+		temp->state_lock = sem_open(temp->sem_name, O_CREAT | O_EXCL, 0666, 1);
+		if (temp->state_lock == SEM_FAILED)
 			return (cleanup(philos, NULL, ERR_SYS) ? NULL : NULL);
 		num++;
 		temp++;
@@ -80,11 +91,15 @@ t_philos	*create_philos(t_params *params)
 
 int			create_sems(t_params *params)
 {
-	if ((g_forks = sem_open("forks", O_CREAT, 0666, params->thr_num)) == SEM_FAILED)
-		return (cleanup(NULL, params, ERR_SYS));
-	if ((g_write_lock = sem_open("write_lock", O_CREAT, 0666, 1)) == SEM_FAILED)
-		return (cleanup(NULL, params, ERR_SYS));
-	if ((g_forks_count = sem_open("forks_count", O_CREAT, 0666, 1)) == SEM_FAILED)
+	sem_unlink("forks");
+	sem_unlink("write_lock");
+	sem_unlink("ok_to_take");
+	g_forks = sem_open("forks", O_CREAT | O_EXCL, 0666, params->thr_num);
+	g_write_lock = sem_open("write_lock", O_CREAT | O_EXCL, 0666, 1);
+	g_ok_to_take =
+		sem_open("ok_to_take", O_CREAT | O_EXCL, 0666, params->thr_num - 1);
+	if (g_forks == SEM_FAILED || g_write_lock == SEM_FAILED
+		|| g_ok_to_take == SEM_FAILED)
 		return (cleanup(NULL, params, ERR_SYS));
 	return (0);
 }

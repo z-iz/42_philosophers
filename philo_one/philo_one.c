@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 23:32:34 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 15:12:22 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/11 20:28:32 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,9 @@ static void	*philo_worker(void *ptr)
 
 	phil = (t_philos *)ptr;
 	if (pthread_create(&monitor, NULL, philo_monitor, phil))
-		return (cleanup(phil, phil->params, ERR_SYS) ? NULL : NULL);
+		return (NULL);
 	if (pthread_detach(monitor))
-		return (cleanup(phil, phil->params, ERR_SYS) ? NULL : NULL);
+		return (NULL);
 	while (1)
 	{
 		philo_take_forks(phil);

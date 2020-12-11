@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 23:38:20 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/10 17:51:10 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/11 18:56:06 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,9 @@
 ** Global variables used to keep semaphores for forks and writing output.
 */
 
-extern sem_t 		*g_forks;
-extern sem_t 		*g_write_lock;
-extern sem_t		*g_forks_count;
-extern int			g_forks_left;
+extern sem_t		*g_forks;
+extern sem_t		*g_write_lock;
+extern sem_t		*g_ok_to_take;
 
 /*
 ** Enumeration of philosopher's states.
@@ -97,7 +96,7 @@ typedef struct		s_philos
 	t_states		state;
 	int				num_ate;
 	int				last_eat;
-	sem_t*			state_lock;
+	sem_t			*state_lock;
 	char			*sem_name;
 	t_params		*params;
 }					t_philos;

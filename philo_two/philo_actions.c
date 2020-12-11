@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/06 16:46:24 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/10 18:06:49 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/11 21:06:24 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,64 +20,30 @@
 
 static void	fork_locker(t_philos *phil, int flag)
 {
-	if (!sem_wait(phil->state_lock))
-		printf("Test\n");
-	printf("G_forks is: %d\n", g_forks_left);
-	sem_wait(g_forks_count);
-	if (flag == LOCK && phil->state == THINKING && g_forks_left > 1)
+	sem_wait(phil->state_lock);
+	if (flag == LOCK && phil->state == THINKING)
 	{
 		sem_post(phil->state_lock);
-		g_forks_left--;
-		sem_post(g_forks_count);
+		sem_wait(g_ok_to_take);
 		sem_wait(g_forks);
 		return ;
 	}
 	else if (flag == LOCK && phil->state == TAKEN_FORK)
 	{
 		sem_post(phil->state_lock);
-		g_forks_left--;
-		sem_post(g_forks_count);
 		sem_wait(g_forks);
 		return ;
 	}
 	if (flag == UNLOCK)
 	{
 		sem_post(phil->state_lock);
-		g_forks_left += 2;
-		sem_post(g_forks_count);
 		sem_post(g_forks);
+		sem_post(g_ok_to_take);
 		sem_post(g_forks);
 		return ;
 	}
 }
-/*
-	int	left_fork;
-	int	right_fork;
 
-	left_fork = phil->num - 1;
-	right_fork = (phil->num == 1 ? phil->params->thr_num - 1 : phil->num - 2);
-	pthread_mutex_lock(&(phil->state_lock));
-	if (flag == LOCK && phil->state == THINKING)
-	{
-		pthread_mutex_unlock(&(phil->state_lock));
-		phil->type == LEFTY ? pthread_mutex_lock(g_forks + left_fork) :
-			pthread_mutex_lock(g_forks + right_fork);
-	}
-	else if (flag == LOCK
-		&& (phil->state == TAKEN_LFORK || phil->state == TAKEN_RFORK))
-	{
-		pthread_mutex_unlock(&(phil->state_lock));
-		phil->type == LEFTY ? pthread_mutex_lock(g_forks + right_fork) :
-			pthread_mutex_lock(g_forks + left_fork);
-	}
-	if (flag == UNLOCK)
-	{
-		pthread_mutex_unlock(&(phil->state_lock));
-		pthread_mutex_unlock(g_forks + left_fork);
-		pthread_mutex_unlock(g_forks + right_fork);
-	}
-}
-*/
 /*
 ** Function to model the philosopher thinking.
 */
@@ -96,7 +62,6 @@ void		philo_think(t_philos *phil)
 
 void		philo_take_forks(t_philos *phil)
 {
-	printf("TEST PROCESS'\n");
 	fork_locker(phil, LOCK);
 	sem_wait(phil->state_lock);
 	phil->state = TAKEN_FORK;
