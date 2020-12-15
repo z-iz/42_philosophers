@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 23:38:20 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/15 20:01:53 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 02:53:27 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,7 @@
 # define SEM_FORKS		("forks")
 # define SEM_WRITE		("write_lock")
 # define SEM_TAKE		("ok_to_take")
-
-# define EXIT_ERR		(-1)
-# define EXIT_DEAD		(1)
-# define EXIT_ATE		(2)
+# define SEM_FIN		("finish")
 
 /*
 ** Global variables used to keep semaphores for forks and writing output.
@@ -52,6 +49,7 @@
 extern sem_t		*g_forks;
 extern sem_t		*g_write_lock;
 extern sem_t		*g_ok_to_take;
+extern sem_t		*g_finish;
 
 /*
 ** Enumeration of philosopher's states.
@@ -103,10 +101,11 @@ typedef struct		s_philos
 	int				num;
 	pid_t			pid;
 	t_states		state;
-	int				num_ate;
 	int				last_eat;
 	sem_t			*state_lock;
+	sem_t			*eat_lock;
 	char			*sem_name;
+	char			*eat_name;
 	t_params		*params;
 }					t_philos;
 
@@ -138,6 +137,7 @@ void				philo_sleep(t_philos *phil);
 */
 
 void				*philo_monitor(void *ptr);
+int					start_eat_monitor(t_philos *phil);
 
 /*
 ** Philosophers - utilites

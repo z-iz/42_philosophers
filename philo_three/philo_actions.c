@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/06 16:46:24 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/15 20:12:02 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 02:54:37 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 
 static void	fork_locker(t_philos *phil, int flag)
 {
-	printf("Locking fork\n");
 	sem_wait(phil->state_lock);
 	if (flag == LOCK && phil->state == THINKING)
 	{
@@ -89,10 +88,10 @@ void		philo_eat(t_philos *phil)
 	time = get_time(phil->params);
 	print_status(phil->num, phil->state, time);
 	phil->last_eat = time;
-	phil->num_ate++;
 	sem_post(phil->state_lock);
 	while (get_time(phil->params) - time < phil->params->t_eat)
 		usleep(100);
+	sem_post(phil->eat_lock);
 	fork_locker(phil, UNLOCK);
 }
 

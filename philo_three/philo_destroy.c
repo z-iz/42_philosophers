@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 02:19:10 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/15 20:02:47 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 02:47:23 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,11 @@ static void	close_sems(void)
 	sem_unlink(SEM_FORKS);
 	sem_unlink(SEM_WRITE);
 	sem_unlink(SEM_TAKE);
+	sem_unlink(SEM_FIN);
 	sem_close(g_forks);
 	sem_close(g_write_lock);
 	sem_close(g_ok_to_take);
+	sem_close(g_finish);
 }
 
 /*
@@ -54,6 +56,9 @@ static void	clear_philos(t_philos *phil)
 	{
 		sem_unlink((phil + num)->sem_name);
 		free((phil + num)->sem_name);
+		sem_unlink((phil + num)->eat_name);
+		free((phil + num)->eat_name);
+		(phil + num)->eat_name = NULL;
 		(phil + num)->sem_name = NULL;
 		num++;
 	}

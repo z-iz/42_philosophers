@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/07 17:10:39 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/15 20:00:56 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 02:46:04 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ t_philos	*create_philos(t_params *params)
 			return (cleanup(NULL, params, ERR_SYS) ? NULL : NULL);
 		temp->num = num + 1;
 		make_sem_name(temp->sem_name, "state_lock", temp->num);
+		make_sem_name(temp->eat_name, "eat_lock", temp->num);
 		temp->state = THINKING;
 		temp->params = params;
 		num++;
@@ -90,12 +91,14 @@ int			create_sems(t_params *params)
 	sem_unlink(SEM_FORKS);
 	sem_unlink(SEM_WRITE);
 	sem_unlink(SEM_TAKE);
+	sem_unlink(SEM_FIN);
 	g_forks = sem_open(SEM_FORKS, O_CREAT | O_EXCL, 0666, params->proc_num);
 	g_write_lock = sem_open(SEM_WRITE, O_CREAT | O_EXCL, 0666, 1);
 	g_ok_to_take =
 		sem_open(SEM_TAKE, O_CREAT | O_EXCL, 0666, params->proc_num - 1);
+	g_finish = sem_open(SEM_FIN, O_CREAT | O_EXCL, 0666, 0);
 	if (g_forks == SEM_FAILED || g_write_lock == SEM_FAILED
-		|| g_ok_to_take == SEM_FAILED)
+		|| g_ok_to_take == SEM_FAILED || g_finish == SEM_FAILED)
 		return (cleanup(NULL, params, ERR_SYS));
 	return (0);
 }
@@ -109,10 +112,14 @@ int			open_sems_child(t_philos *phil)
 	g_forks = sem_open(SEM_FORKS, 0);
 	g_write_lock = sem_open(SEM_WRITE, 0);
 	g_ok_to_take = sem_open(SEM_TAKE, 0);
+	g_finish = sem_open(SEM_FIN, 0);
 	sem_unlink(phil->sem_name);
 	phil->state_lock = sem_open(phil->sem_name, O_CREAT | O_EXCL, 0666, 1);
+	sem_unlink(phil->eat_name);
+	phil->state_lock = sem_open(phil->eat_name, O_CREAT | O_EXCL, 0666, 0);
 	if (g_forks == SEM_FAILED || g_write_lock == SEM_FAILED
-		|| g_ok_to_take == SEM_FAILED || phil->state_lock == SEM_FAILED)
-		exit(EXIT_ERR);
+		|| g_finish == SEM_FAILED || g_ok_to_take == SEM_FAILED
+		|| phil->state_lock == SEM_FAILED || phil->eat_lock == SEM_FAILED)
+		return (1);
 	return (0);
 }

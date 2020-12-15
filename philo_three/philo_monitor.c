@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 17:23:33 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/15 20:01:16 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 02:55:23 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,13 +31,46 @@ void		*philo_monitor(void *ptr)
 		if (time - phil->last_eat > phil->params->t_die
 			&& phil->state != EATING)
 		{
-			print_status(phil->num, phil->state, get_time(phil->params));
-			exit(EXIT_DEAD);
+			print_status(phil->num, DIED, time);
+			sem_post(phil->state_lock);
+			sem_post(g_finish);
+			return (NULL);
 		}
-		if (phil->num_ate >= phil->params->num_eats)
-			exit(EXIT_ATE);
 		sem_post(phil->state_lock);
 		usleep(CHECK_PERIOD);
 	}
 	return (NULL);
+}
+
+void		*eat_monitor(void *ptr)
+{
+	int			i;
+	int			count;
+	t_philos	*phil;
+
+	phil = (t_philos *)ptr;
+	i = -1;
+	count = 0;
+	while (count < phil->params->num_eats)
+	{
+		while (++i < phil->params->proc_num)
+			sem_wait((phil + i)->eat_lock);
+		count++;
+	}
+	print_status(0, ATE, get_time(phil->params));
+	sem_post(g_finish);
+	return (NULL);
+}
+
+int			start_eat_monitor(t_philos *phil)
+{
+	pthread_t	thread;
+
+	if (phil->params->num_eats)
+	{
+		if (pthread_create(&thread, NULL, eat_monitor, phil)
+			|| pthread_detach(thread))
+			return (1);
+	}
+	return (0);
 }

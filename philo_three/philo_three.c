@@ -6,7 +6,7 @@
 /*   By: larosale <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 16:44:32 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/15 20:17:12 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 02:54:15 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 sem_t		*g_forks;
 sem_t		*g_write_lock;
 sem_t		*g_ok_to_take;
+sem_t		*g_finish;
 
 /*
 ** Worker function for the philosopher thread.
@@ -23,24 +24,22 @@ sem_t		*g_ok_to_take;
 ** Then it starts the working loop of changing the philosopher's states.
 */
 
-static void	philo_worker(t_philos *phil)
+static int	philo_worker(t_philos *phil)
 {
 	pthread_t	monitor;
 
-		printf("Process started\n");
-	open_sems_child(phil);
-	if (pthread_create(&monitor, NULL, philo_monitor, phil))
-		exit(EXIT_ERR);	
-	if (pthread_detach(monitor))
-		exit(EXIT_ERR);
+	if (open_sems_child(phil)
+		|| pthread_create(&monitor, NULL, philo_monitor, phil)
+		|| pthread_detach(monitor))
+		return (1);
 	while (1)
 	{
-		printf("Entering loop\n");
 		philo_take_forks(phil);
 		philo_eat(phil);
 		philo_sleep(phil);
 		philo_think(phil);
 	}
+	return (0);
 }
 
 /*
@@ -50,29 +49,18 @@ static void	philo_worker(t_philos *phil)
 static int	start_processes(t_philos *philos, t_params *params)
 {
 	int			i;
-	int			stat_loc;
-	int			ret;
 
 	i = -1;
-	ret = 0;
-	printf("STARTING\n");
 	while (++i < params->proc_num)
 	{
 		if (((philos + i)->pid = fork()) < 0)
 			return (cleanup(philos, params, ERR_SYS));
 		else if ((philos + i)->pid == 0)
 		{
-			philo_worker(philos + i);
+			if (philo_worker(philos + i))
+				exit(1);
 			exit(0);
 		}
-	}
-	while (waitpid(0, &stat_loc, WUNTRACED) > 0)
-	{
-		if (WIFEXITED(stat_loc) && (ret = WEXITSTATUS(stat_loc))
-			&& ret == EXIT_DEAD)
-			break ;
-		if (ret == EXIT_ATE)
-			params->num_eats--;
 	}
 	return (0);
 }
@@ -122,13 +110,12 @@ int			main(int argc, char **argv)
 	philos = NULL;
 	if (check_args(argc, argv, &params)
 		|| !(philos = create_philos(params))
-		|| create_sems(params))
+		|| create_sems(params)
+		|| start_eat_monitor(philos))
 		return (1);
 	get_time(params);
 	if (start_processes(philos, params))
 		return (1);
-	if (params->num_eats == 0)
-		print_status(philos->num, ATE, get_time(params));
 	cleanup(philos, params, OK);
 	return (0);
 }
