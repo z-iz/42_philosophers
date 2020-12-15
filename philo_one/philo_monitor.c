@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 17:23:33 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 15:07:49 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/15 15:47:17 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,18 +81,23 @@ static int	check_status(t_philos *philos, t_params *params, int *max)
 void		monitor_threads(t_philos *philos, t_params *params)
 {
 	int	i;
+	int j;
 	int	max_eat;
 
 	while (1)
 	{
 		i = -1;
+		j = -1;
 		max_eat = 0;
 		while (++i < params->thr_num)
 		{
 			pthread_mutex_lock(&((philos + i)->state_lock));
 			if (check_status(philos + i, params, &max_eat))
 			{
-				pthread_mutex_unlock(&((philos + i)->state_lock));
+				while (++j < params->thr_num)
+					j != i ?
+						pthread_mutex_lock(&((philos + j)->state_lock)) : 0;
+				usleep(100000);
 				return ;
 			}
 			pthread_mutex_unlock(&((philos + i)->state_lock));

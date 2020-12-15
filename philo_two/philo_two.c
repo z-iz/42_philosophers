@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 23:32:34 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/11 21:06:21 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/15 13:43:59 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,6 @@ int			main(int argc, char **argv)
 	if (run_threads(philos, params))
 		return (1);
 	monitor_threads(philos, params);
-	sleep(1);
 	cleanup(philos, params, OK);
 	return (0);
 }

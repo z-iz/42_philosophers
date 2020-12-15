@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/06 16:46:24 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/09 15:20:50 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/15 15:29:50 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ static void	fork_locker(t_philos *phil, int flag)
 	int	left_fork;
 	int	right_fork;
 
+	pthread_mutex_lock(&(phil->state_lock));
 	left_fork = phil->num - 1;
 	right_fork = (phil->num == 1 ? phil->params->thr_num - 1 : phil->num - 2);
-	pthread_mutex_lock(&(phil->state_lock));
 	if (flag == LOCK && phil->state == THINKING)
 	{
 		pthread_mutex_unlock(&(phil->state_lock));
@@ -39,7 +39,7 @@ static void	fork_locker(t_philos *phil, int flag)
 		phil->type == LEFTY ? pthread_mutex_lock(g_forks + right_fork) :
 			pthread_mutex_lock(g_forks + left_fork);
 	}
-	if (flag == UNLOCK)
+	if (flag == UNLOCK && g_forks)
 	{
 		pthread_mutex_unlock(&(phil->state_lock));
 		pthread_mutex_unlock(g_forks + left_fork);
