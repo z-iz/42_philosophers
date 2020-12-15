@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 23:38:20 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/15 20:02:06 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/15 20:01:53 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <semaphore.h>
+# include <signal.h>
+# include <stdio.h>
 
 /*
 ** MAX_THREADS defines maxumum number of threads allowed in the program
@@ -28,12 +30,20 @@
 ** CHECK_PERIOD defines interval for the philosopher death monitor.
 */
 
-# define MAX_THREADS	(200)
+# define MAX_PROCESSES	(200)
 # define MIN_TIME		(60)
 # define CHECK_PERIOD	(1000)
 
 # define LOCK			(1)
 # define UNLOCK			(2)
+
+# define SEM_FORKS		("forks")
+# define SEM_WRITE		("write_lock")
+# define SEM_TAKE		("ok_to_take")
+
+# define EXIT_ERR		(-1)
+# define EXIT_DEAD		(1)
+# define EXIT_ATE		(2)
 
 /*
 ** Global variables used to keep semaphores for forks and writing output.
@@ -69,7 +79,7 @@ typedef enum		e_states
 
 typedef struct		s_params
 {
-	int				thr_num;
+	int				proc_num;
 	int				t_die;
 	int				t_eat;
 	int				t_sleep;
@@ -91,7 +101,7 @@ typedef struct		s_params
 typedef struct		s_philos
 {
 	int				num;
-	pthread_t		thread;
+	pid_t			pid;
 	t_states		state;
 	int				num_ate;
 	int				last_eat;
@@ -106,6 +116,13 @@ typedef struct		s_philos
 
 t_philos			*create_philos(t_params *params);
 int					create_sems(t_params *params);
+int					open_sems_child(t_philos *phil);
+
+/*
+** Philosophers - destruction
+*/
+
+int					cleanup(t_philos *phil, t_params *params, int errnum);
 
 /*
 ** Philosophers - actions
@@ -121,7 +138,6 @@ void				philo_sleep(t_philos *phil);
 */
 
 void				*philo_monitor(void *ptr);
-void				monitor_threads(t_philos *philos, t_params *params);
 
 /*
 ** Philosophers - utilites
@@ -129,7 +145,6 @@ void				monitor_threads(t_philos *philos, t_params *params);
 
 void				print_status(int num, t_states state, int time);
 int					get_time(t_params *params);
-int					cleanup(t_philos *phil, t_params *params, int errnum);
 
 /*
 ** Common utils
