@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/07 17:10:39 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/16 02:46:04 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 13:35:43 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,8 @@ t_philos	*create_philos(t_params *params)
 	temp = philos;
 	while (num < params->proc_num)
 	{
-		if (!(temp->sem_name = ft_calloc(100, 1)))
+		if (!(temp->sem_name = ft_calloc(100, 1))
+			|| !(temp->eat_name = ft_calloc(100, 1)))
 			return (cleanup(NULL, params, ERR_SYS) ? NULL : NULL);
 		temp->num = num + 1;
 		make_sem_name(temp->sem_name, "state_lock", temp->num);
