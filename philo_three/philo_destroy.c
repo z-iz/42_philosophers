@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 02:19:10 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/16 02:47:23 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 17:36:51 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void	stop_processes(t_philos *phil)
 
 	i = -1;
 	while (++i < phil->params->proc_num)
-		kill(phil->pid, SIGKILL);
+		kill((phil + i)->pid, SIGKILL);
 	return ;
 }
 
@@ -71,15 +71,17 @@ static void	clear_philos(t_philos *phil)
 
 /*
 ** Cleans up the program state:
+** - kills all running child processes;
+** - unlinks and closes semaphores;
 ** - frees the "t_philos" array;
 ** - frees the "params" structure;
-** - destroys "g_forks", "g_ok_to_take" and "g_write_lock" semaphores.
 */
 
 int			cleanup(t_philos *phil, t_params *params, int errnum)
 {
+	if (phil)
+		stop_processes(phil);
 	close_sems();
-	stop_processes(phil);	
 	if (params && !phil)
 		free(params);
 	if (phil)

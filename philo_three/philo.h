@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 23:38:20 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/16 02:53:27 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 17:46:14 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 # include <sys/time.h>
 # include <semaphore.h>
 # include <signal.h>
-# include <stdio.h>
 
 /*
 ** MAX_THREADS defines maxumum number of threads allowed in the program
@@ -88,11 +87,12 @@ typedef struct		s_params
 /*
 ** The structure of type "t_philos" defines philosopher's parameters:
 ** - number, starting from 1;
-** - associated thread variable;
+** - pid of process;
 ** - state (starts with THINKING);
 ** - number of times the philosopher ate;
 ** - time of last eat (from its start);
 ** - semaphore for locking the state;
+** - semaphore for locking the eat count;
 ** - pointer to params structure.
 */
 
@@ -115,7 +115,6 @@ typedef struct		s_philos
 
 t_philos			*create_philos(t_params *params);
 int					create_sems(t_params *params);
-int					open_sems_child(t_philos *phil);
 
 /*
 ** Philosophers - destruction

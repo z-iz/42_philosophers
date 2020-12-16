@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/07 17:09:27 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/15 20:15:02 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 17:38:31 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,36 +14,27 @@
 
 /*
 ** Prints the current status with philosopher's number and timestamp.
-** Static variable "finish" is used for determining an ending state
-** (death or max_eats approach) and stopping output.
 */
 
 void	print_status(int num, t_states state, int time)
 {
-	static int	finish = 0;
-
 	sem_wait(g_write_lock);
-	if (!finish)
+	if (state != ATE)
 	{
-		if (state != ATE)
-		{
-			ft_putnbr_fd(time, 1);
-			ft_putstr_fd(" ", 1);
-			ft_putnbr_fd(num, 1);
-		}
-		state == TAKEN_FORK || state == TAKEN_FORKS
-			? ft_putstr_fd(" has taken a fork\n", 1) : 0;
-		state == EATING ? ft_putstr_fd(" is eating\n", 1) : 0;
-		state == SLEEPING ? ft_putstr_fd(" is sleeping\n", 1) : 0;
-		state == THINKING ? ft_putstr_fd(" is thinking\n", 1) : 0;
-		if (state == DIED || state == ATE)
-		{
-			state == DIED ? ft_putstr_fd(" died\n", 1)
-				: ft_putstr_fd("Philosophers ate max number of times\n", 1);
-			finish = 1;
-		}
+		ft_putnbr_fd(time, 1);
+		ft_putstr_fd(" ", 1);
+		ft_putnbr_fd(num, 1);
 	}
-	sem_post(g_write_lock);
+	state == TAKEN_FORK || state == TAKEN_FORKS
+		? ft_putstr_fd(" has taken a fork\n", 1) : 0;
+	state == EATING ? ft_putstr_fd(" is eating\n", 1) : 0;
+	state == SLEEPING ? ft_putstr_fd(" is sleeping\n", 1) : 0;
+	state == THINKING ? ft_putstr_fd(" is thinking\n", 1) : 0;
+	state == DIED ? ft_putstr_fd(" died\n", 1) : 0;
+	state == ATE ?
+		ft_putstr_fd("Philosophers ate max number of times\n", 1) : 0;
+	if (state != DIED && state != ATE)
+		sem_post(g_write_lock);
 }
 
 /*

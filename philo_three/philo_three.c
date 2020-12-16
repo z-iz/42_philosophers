@@ -6,7 +6,7 @@
 /*   By: larosale <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 16:44:32 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/16 13:59:21 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 17:47:13 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ sem_t		*g_ok_to_take;
 sem_t		*g_finish;
 
 /*
-** Worker function for the philosopher thread.
+** Worker function for the philosopher process..
 ** First, it creates a monitoring thread to check for starvation and report
 ** death.
 ** Then it starts the working loop of changing the philosopher's states.
@@ -28,14 +28,11 @@ static int	philo_worker(t_philos *phil)
 {
 	pthread_t	monitor;
 
-	printf("Process started\n");
-	if (open_sems_child(phil)
-		|| pthread_create(&monitor, NULL, philo_monitor, phil)
+	if (pthread_create(&monitor, NULL, philo_monitor, phil)
 		|| pthread_detach(monitor))
 		return (1);
 	while (1)
 	{
-		printf("Child cycle\n");
 		philo_take_forks(phil);
 		philo_eat(phil);
 		philo_sleep(phil);
@@ -60,11 +57,7 @@ static int	start_processes(t_philos *philos, t_params *params)
 		else if ((philos + i)->pid == 0)
 		{
 			if (philo_worker(philos + i))
-			{
-				printf("Exited with error\n");
 				exit(1);
-			}
-			printf("Exited without error\n");
 			exit(0);
 		}
 	}
@@ -122,6 +115,7 @@ int			main(int argc, char **argv)
 	get_time(params);
 	if (start_processes(philos, params))
 		return (1);
+	sem_wait(g_finish);
 	cleanup(philos, params, OK);
 	return (0);
 }

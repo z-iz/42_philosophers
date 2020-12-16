@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/07 17:10:39 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/16 13:35:43 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 17:45:16 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,29 @@ static void	make_sem_name(char *buffer, char *str, int num)
 }
 
 /*
+** Helper function for "create_philos" function.
+** Creates semaphores for each philosopher:
+** - state_lock - locks the philosopher's state for modification;
+** - eat_lock - used to signal the eating event to the monitor.
+*/
+
+static int	create_sems_phil(t_philos *temp)
+{
+	if (!(temp->sem_name = ft_calloc(100, 1))
+		|| !(temp->eat_name = ft_calloc(100, 1)))
+		return (1);
+	make_sem_name(temp->sem_name, "state_lock", temp->num);
+	make_sem_name(temp->eat_name, "eat_lock", temp->num);
+	sem_unlink(temp->sem_name);
+	temp->state_lock = sem_open(temp->sem_name, O_CREAT | O_EXCL, 0666, 1);
+	sem_unlink(temp->eat_name);
+	temp->eat_lock = sem_open(temp->eat_name, O_CREAT | O_EXCL, 0666, 0);
+	if (temp->state_lock == SEM_FAILED || temp->eat_lock == SEM_FAILED)
+		return (1);
+	return (0);
+}
+
+/*
 ** Creates an array of data structures for philosopher's processes and returns
 ** the pointer to its first element.
 */
@@ -69,12 +92,9 @@ t_philos	*create_philos(t_params *params)
 	temp = philos;
 	while (num < params->proc_num)
 	{
-		if (!(temp->sem_name = ft_calloc(100, 1))
-			|| !(temp->eat_name = ft_calloc(100, 1)))
-			return (cleanup(NULL, params, ERR_SYS) ? NULL : NULL);
 		temp->num = num + 1;
-		make_sem_name(temp->sem_name, "state_lock", temp->num);
-		make_sem_name(temp->eat_name, "eat_lock", temp->num);
+		if (create_sems_phil(temp))
+			return (cleanup(philos, params, ERR_SYS) ? NULL : NULL);
 		temp->state = THINKING;
 		temp->params = params;
 		num++;
@@ -101,26 +121,5 @@ int			create_sems(t_params *params)
 	if (g_forks == SEM_FAILED || g_write_lock == SEM_FAILED
 		|| g_ok_to_take == SEM_FAILED || g_finish == SEM_FAILED)
 		return (cleanup(NULL, params, ERR_SYS));
-	return (0);
-}
-
-/*
-** Opens semaphores in child processes
-*/
-
-int			open_sems_child(t_philos *phil)
-{
-	g_forks = sem_open(SEM_FORKS, 0);
-	g_write_lock = sem_open(SEM_WRITE, 0);
-	g_ok_to_take = sem_open(SEM_TAKE, 0);
-	g_finish = sem_open(SEM_FIN, 0);
-	sem_unlink(phil->sem_name);
-	phil->state_lock = sem_open(phil->sem_name, O_CREAT | O_EXCL, 0666, 1);
-	sem_unlink(phil->eat_name);
-	phil->state_lock = sem_open(phil->eat_name, O_CREAT | O_EXCL, 0666, 0);
-	if (g_forks == SEM_FAILED || g_write_lock == SEM_FAILED
-		|| g_finish == SEM_FAILED || g_ok_to_take == SEM_FAILED
-		|| phil->state_lock == SEM_FAILED || phil->eat_lock == SEM_FAILED)
-		return (1);
 	return (0);
 }

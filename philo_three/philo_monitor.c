@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 17:23:33 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/16 13:35:50 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 17:34:11 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ void		*philo_monitor(void *ptr)
 		if (time - phil->last_eat > phil->params->t_die
 			&& phil->state != EATING)
 		{
-			print_status(phil->num, DIED, time);
 			sem_post(phil->state_lock);
+			print_status(phil->num, DIED, time);
 			sem_post(g_finish);
 			return (NULL);
 		}
@@ -42,6 +42,13 @@ void		*philo_monitor(void *ptr)
 	return (NULL);
 }
 
+/*
+** Monitoring function for reaching the max eat count.
+** Launches from the main thread.
+** Counts the number of eats that all philosophers made until it reaches
+** maximum, then stops and unlocks finishing semaphore.
+*/
+
 void		*eat_monitor(void *ptr)
 {
 	int			i;
@@ -49,18 +56,22 @@ void		*eat_monitor(void *ptr)
 	t_philos	*phil;
 
 	phil = (t_philos *)ptr;
-	i = -1;
 	count = 0;
 	while (count < phil->params->num_eats)
 	{
+		i = -1;
 		while (++i < phil->params->proc_num)
 			sem_wait((phil + i)->eat_lock);
 		count++;
 	}
-	print_status(0, ATE, get_time(phil->params));
+	print_status(0, ATE, 0);
 	sem_post(g_finish);
 	return (NULL);
 }
+
+/*
+** Starts a thread with "eat_monitor" function.
+*/
 
 int			start_eat_monitor(t_philos *phil)
 {
