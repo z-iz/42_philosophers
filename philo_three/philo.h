@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 23:38:20 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/16 17:46:14 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 19:04:08 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,7 @@ int					create_sems(t_params *params);
 */
 
 int					cleanup(t_philos *phil, t_params *params, int errnum);
+int					close_sems_child(t_philos *start, t_philos *phil);
 
 /*
 ** Philosophers - actions

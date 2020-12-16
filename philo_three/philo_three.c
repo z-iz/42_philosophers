@@ -6,7 +6,7 @@
 /*   By: larosale <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 16:44:32 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/16 17:47:13 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 19:08:34 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,12 @@ sem_t		*g_finish;
 ** Then it starts the working loop of changing the philosopher's states.
 */
 
-static int	philo_worker(t_philos *phil)
+static int	philo_worker(t_philos *start, t_philos *phil)
 {
 	pthread_t	monitor;
 
-	if (pthread_create(&monitor, NULL, philo_monitor, phil)
+	if (close_sems_child(start, phil)
+		|| pthread_create(&monitor, NULL, philo_monitor, phil)
 		|| pthread_detach(monitor))
 		return (1);
 	while (1)
@@ -56,7 +57,7 @@ static int	start_processes(t_philos *philos, t_params *params)
 			return (cleanup(philos, params, ERR_SYS));
 		else if ((philos + i)->pid == 0)
 		{
-			if (philo_worker(philos + i))
+			if (philo_worker(philos, philos + i))
 				exit(1);
 			exit(0);
 		}

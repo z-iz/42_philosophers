@@ -6,7 +6,7 @@
 /*   By: larosale <larosale@42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 02:19:10 by larosale          #+#    #+#             */
-/*   Updated: 2020/12/16 17:36:51 by larosale         ###   ########.fr       */
+/*   Updated: 2020/12/16 19:09:51 by larosale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,27 @@ static void	clear_philos(t_philos *phil)
 	free(phil);
 	phil = NULL;
 	return ;
+}
+
+/*
+** Closes open unused semaphores in child processes
+*/
+
+int			close_sems_child(t_philos *start, t_philos *phil)
+{
+	int	i;
+
+	i = -1;
+	while (++i < start->params->proc_num)
+	{
+		if ((start + i) != phil)
+		{
+			if (sem_close((start + i)->state_lock)
+				|| sem_close((start + i)->eat_lock))
+				return (1);
+		}
+	}
+	return (0);
 }
 
 /*
