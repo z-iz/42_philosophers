@@ -19,7 +19,7 @@ The problem comes in three flavors:
 2. Forks lie in the center of the table. Philosophers should be represented by **threads** and forks by a **semaphore**;
 3. Forks lie in the center of the table. Philosophers should be represented by **processes** and forks by a **semaphore**.
 
-The solutions are implemented in three C programs - philo_one, philo_two and philo_three.
+The solutions are implemented in the three C programs - philo_one, philo_two and philo_three.
 
 ## Usage
 
@@ -39,3 +39,6 @@ For example:
 ./philo_one 4 410 200 200
 ```
 The last parameter is optional. If it is set, then the simulation will stop when all philosophers eat the specified number of times (or if one of them dies).
+
+### To stop simulation
+Simply press Ctrl - C :)
